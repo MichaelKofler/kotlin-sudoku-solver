@@ -1,6 +1,8 @@
 # Sudoku solver in Kotlin
 
-This 
+This small IntelliJ project contains Kotlin code to solve sudokus. The class `Sudoku` has two main methods: `solve` tries to non-recursively solve the sudoku. It fails for difficult sudokus. `solveRecursive` does better. It also calls `solve` and start's guessing, when `solve` can't find a way.
+
+If your soduku has more than one solutions, `solve` or `solveRecursive` get you just *one* solution.
 
 Usage:
 

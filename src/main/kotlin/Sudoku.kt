@@ -43,6 +43,7 @@ class Sudoku(data: String) {
                     candidates[row][col] = mutableSetOf()
             }
         }
+        //
         eliminateCandidates()
     }
 
@@ -54,11 +55,6 @@ class Sudoku(data: String) {
                 if (sudoku[row][col] == 0 && candidates[row][col].size == 0)
                     failedCells++
         return failedCells
-    }
-
-    // indent line according to recursion level
-    private fun indent() {
-        print("  ".repeat(debugRecLevel))
     }
 
     // output current state of Sudoko including solved cells (bold, black)
@@ -131,13 +127,13 @@ class Sudoku(data: String) {
     }
 
     // try to solve Sudoku (non-recursive)
-    private fun solve(): Result {
+    fun solve(): Result {
         do {
             val todo = statusCellsOpen
             val options = statusCandidatesCount
             // call methods repeatedly, until they make no longer progress
             do while (findNakedSingle())
-            do while (findHiddenSingleInRow())
+            do while (findHiddenSingleRow())
             do while (findHiddenSingleCol())
             do while (findHiddenSingleBox())
             // optimize candidate sets
@@ -312,7 +308,7 @@ class Sudoku(data: String) {
     }
 
     // within a row, is there a number which only appears once?
-    private fun findHiddenSingleInRow(): Boolean {
+    private fun findHiddenSingleRow(): Boolean {
         for (row in 0..8) {
             for (nmb in 1..9) {
                 // is there a number, which is only in ONE candidate set?
@@ -485,27 +481,30 @@ class Sudoku(data: String) {
             val oldcnt = statusCandidatesCount
             // loop over all boxes
             for (rowoffset in 0 until 6 step 3)
-                for (coloffset in 0 until 6 step 3)
+                for (coloffset in 0 until 6 step 3) {
 
-                // within box: loop over all cells
+                    // within box: loop over all cells
                     for (row in rowoffset until rowoffset + 3)
                         for (col in coloffset until coloffset + 3) {
 
                             // within cell: loop over numbers in candidate set
                             for (nmb in candidates[row][col]) {
                                 // is this number in no other row of box?
-                                if (boxBlockAllInSameRow(rowoffset, coloffset, row, col, nmb))
-                                // -> remove number from candidates in
-                                // the same row @ other boxes
+                                if (boxBlockAllInSameRow(rowoffset, coloffset, row, col, nmb)) {
+                                    // -> remove number from candidates in
+                                    // the same row @ other boxes
                                     boxBlockEliminateNumberInRow(coloffset, row, nmb)
+                                }
 
                                 // is this number in no other column of box?
-                                if (boxBlockAllInSameCol(rowoffset, coloffset, row, col, nmb))
-                                // -> remove number from candidates in
-                                // the same column @ other boxes
+                                if (boxBlockAllInSameCol(rowoffset, coloffset, row, col, nmb)) {
+                                    // -> remove number from candidates in
+                                    // the same column @ other boxes
                                     boxBlockEliminateNumberInCol(rowoffset, col, nmb)
+                                }
                             }
                         }
+                }
         } while (statusCandidatesCount < oldcnt)
     }
 
@@ -569,6 +568,11 @@ class Sudoku(data: String) {
             if (row >= rowoffset && row < rowoffset + 3) continue
             candidates[row][col].remove(nmb)
         }
+    }
+
+    // indent line according to recursion level (for debugging output)
+    private fun indent() {
+        print("  ".repeat(debugRecLevel))
     }
 
     // output debug message indented according to recursion level
